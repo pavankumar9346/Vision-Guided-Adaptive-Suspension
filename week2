@@ -1,0 +1,52 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# -------------------------------
+# Simulation Parameters
+# -------------------------------
+road_length = 200          # Number of time steps
+np.random.seed(42)
+
+# Generate synthetic road roughness (0 = smooth, 1 = very rough)
+# Random bumps simulate potholes or rough surfaces
+road_roughness = np.clip(np.random.normal(0.3, 0.2, road_length), 0, 1)
+
+# -------------------------------
+# Adaptive Damping Function
+# -------------------------------
+def adaptive_damping(roughness, speed=60):
+    """
+    Compute adaptive suspension damping value based on road roughness and speed.
+    Returns damping value between 0 (soft) and 1 (stiff)
+    """
+    damping = 0.3 + 0.5 * roughness + 0.002 * speed
+    return np.clip(damping, 0, 1)
+
+# Compute damping for each time step
+damping_values = [adaptive_damping(r) for r in road_roughness]
+
+# -------------------------------
+# Visualization
+# -------------------------------
+plt.figure(figsize=(12,6))
+
+plt.plot(range(road_length), road_roughness, label='Road Roughness', color='brown', linewidth=2)
+plt.plot(range(road_length), damping_values, label='Adaptive Damping', color='blue', linewidth=2)
+
+plt.title("Vision-Guided Adaptive Suspension Simulation")
+plt.xlabel("Time Step")
+plt.ylabel("Value (0-1)")
+plt.ylim(0, 1.2)
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# -------------------------------
+# Optional: Display Road Roughness as an Image
+# -------------------------------
+plt.figure(figsize=(12,2))
+plt.imshow(road_roughness.reshape(1, -1), cmap='gray', aspect='auto')
+plt.title("Simulated Road Roughness Map")
+plt.xlabel("Time Step")
+plt.yticks([])
+plt.show()
